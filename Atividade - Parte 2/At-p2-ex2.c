@@ -27,8 +27,11 @@ typedef struct {
     int pontuacao;
 } Jogador;
 
+
+//Retorna a cor de acordo com o tipo da moeda
 Color corDaMoeda(TipoMoeda tipo) {
     switch (tipo) {
+
         case MOEDA_BRONZE:
             return (Color){160, 90, 40, 255};
 
@@ -46,8 +49,11 @@ Color corDaMoeda(TipoMoeda tipo) {
     }
 }
 
+
+//Retorna o valor da moeda
 int valorDaMoeda(TipoMoeda tipo) {
     switch (tipo) {
+
         case MOEDA_BRONZE:
             return 5;
 
@@ -65,6 +71,8 @@ int valorDaMoeda(TipoMoeda tipo) {
     }
 }
 
+
+//Gera uma posição aleatória 
 Vector2 novaPosicao() {
     return (Vector2){
         GetRandomValue(30, LARGURA_JANELA - 30),
@@ -72,8 +80,14 @@ Vector2 novaPosicao() {
     };
 }
 
+
+// Sorteia o tipo da moeda.
+//
+// 0 = diamante  -> 10%
+// 1 a 3 = ouro  -> 30%
+// 4 a 6 = prata -> 30%
+// 7 a 9 = bronze -> 30%
 TipoMoeda sortearTipoMoeda() {
-    //0 = diamante, 1 a 3 = ouro, 4 a 6 = prata, 7 a 9 = bronze, Assim, o diamante tem 10% de chance.
 
     int sorteio = GetRandomValue(0, 9);
 
@@ -92,7 +106,26 @@ TipoMoeda sortearTipoMoeda() {
     return MOEDA_BRONZE;
 }
 
+
+// Cria uma moeda com nova posição e novo tipo.
+// Essa função também será usada quando uma moeda for coletada.
+void prepararMoeda(Moeda *m) {
+
+    m->pos = novaPosicao();
+
+    m->raio = 10.0f;
+
+    m->tipo = sortearTipoMoeda();
+
+    m->valor = valorDaMoeda(m->tipo);
+
+    m->coletada = false;
+}
+
+
+//Cria todas as moedas
 Moeda *criarMoedas(int quantidade) {
+
     Moeda *moedas = malloc(quantidade * sizeof(Moeda));
 
     if (moedas == NULL) {
@@ -100,26 +133,21 @@ Moeda *criarMoedas(int quantidade) {
     }
 
     for (int i = 0; i < quantidade; i++) {
-        Moeda *m = &moedas[i];
 
-        m->pos = novaPosicao();
-        m->raio = 10.0f;
-
-        m->tipo = sortearTipoMoeda();
-
-        m->valor = valorDaMoeda(m->tipo);
-
-        m->coletada = false;
+        prepararMoeda(&moedas[i]);
     }
 
     return moedas;
 }
 
+
+//Verifica se o jogador encostou na moeda
 bool tentarColetar(
     Moeda *m,
     Vector2 posJogador,
     float raioJogador
 ) {
+
     if (m->coletada) {
         return false;
     }
@@ -134,7 +162,6 @@ bool tentarColetar(
         (m->raio + raioJogador);
 
     if (distancia <= somaRaios) {
-        m->coletada = true;
 
         return true;
     }
@@ -142,7 +169,10 @@ bool tentarColetar(
     return false;
 }
 
+
+//Desenha a moeda
 void desenharMoeda(Moeda *m) {
+
     if (m->coletada) {
         return;
     }
@@ -153,7 +183,8 @@ void desenharMoeda(Moeda *m) {
         corDaMoeda(m->tipo)
     );
 
-    // Diamante é desenhado como um losango
+
+    //Diamante é desenhado como um losango
     if (m->tipo == MOEDA_DIAMANTE) {
 
         Vector2 cima = {
@@ -176,6 +207,7 @@ void desenharMoeda(Moeda *m) {
             m->pos.y
         };
 
+
         DrawTriangle(
             cima,
             esquerda,
@@ -192,7 +224,9 @@ void desenharMoeda(Moeda *m) {
     }
 }
 
+
 int main(void) {
+
     InitWindow(
         LARGURA_JANELA,
         ALTURA_JANELA,
@@ -201,13 +235,19 @@ int main(void) {
 
     SetTargetFPS(60);
 
+
+    //Cria as moedas
     Moeda *moedas = criarMoedas(QUANTIDADE_MOEDAS);
 
     if (moedas == NULL) {
+
         CloseWindow();
+
         return 1;
     }
 
+
+    //Cria o jogador
     Jogador jogador;
 
     jogador.pos = (Vector2){
@@ -216,11 +256,15 @@ int main(void) {
     };
 
     jogador.raio = 15.0f;
+
     jogador.pontuacao = 0;
+
 
     while (!WindowShouldClose()) {
 
-        //Movimento
+
+        //MOVIMENTO DO JOGADOR
+
         if (IsKeyDown(KEY_RIGHT))
             jogador.pos.x += 3;
 
@@ -233,7 +277,9 @@ int main(void) {
         if (IsKeyDown(KEY_DOWN))
             jogador.pos.y += 3;
 
-        //Limites
+
+        //LIMITES DA JANELA
+
         if (jogador.pos.x < jogador.raio)
             jogador.pos.x = jogador.raio;
 
@@ -246,34 +292,51 @@ int main(void) {
         if (jogador.pos.y > ALTURA_JANELA - jogador.raio)
             jogador.pos.y = ALTURA_JANELA - jogador.raio;
 
-        //Coleta
-        for (int i = 0; i < QUANTIDADE_MOEDAS; i++) {
 
-            if (tentarColetar(
-                    &moedas[i],
-                    jogador.pos,
-                    jogador.raio
-                )) {
+        //COLETA DAS MOEDAS
 
-                jogador.pontuacao += moedas[i].valor;
-            }
-        }
+        //COLETA DAS MOEDAS
+
+for (int i = 0; i < QUANTIDADE_MOEDAS; i++) {
+
+    if (tentarColetar(
+            &moedas[i],
+            jogador.pos,
+            jogador.raio
+        )) {
+
+        jogador.pontuacao += moedas[i].valor;
+        prepararMoeda(&moedas[i]);
+    }
+}
+
+//DESENHO
+
+        //DESENHO
 
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
 
-        //Moedas
+
+        //Desenha as moedas
+
         for (int i = 0; i < QUANTIDADE_MOEDAS; i++) {
+
             desenharMoeda(&moedas[i]);
         }
 
-        //Jogador
+
+        //Desenha o jogador
+
         DrawCircleV(
             jogador.pos,
             jogador.raio,
             BLUE
         );
+
+
+        //Pontuação
 
         DrawText(
             TextFormat(
@@ -285,6 +348,9 @@ int main(void) {
             20,
             BLACK
         );
+
+
+        //Instruções
 
         DrawText(
             "Setas: mover jogador",
@@ -302,8 +368,12 @@ int main(void) {
             DARKBLUE
         );
 
+
         EndDrawing();
     }
+
+
+    //Libera a memória
 
     free(moedas);
 
