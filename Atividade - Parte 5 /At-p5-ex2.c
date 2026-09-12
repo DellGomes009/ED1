@@ -88,34 +88,9 @@ void desenharEntidade(Entidade *e) {
     }
 }
 
-// EXERCÍCIO 1: Função que ordena a entidade mais próxima para o índice 1
-void ordenarMaisProxima(Entidade *jogador) {
-    if (totalEntidades <= 2) return;
-
-    int indiceMaisProxima = 1;
-    float menorDistancia = sqrtf(powf(jogador->pos.x - vetorEntidades[1]->pos.x, 2) + 
-                                 powf(jogador->pos.y - vetorEntidades[1]->pos.y, 2));
-
-    for (int i = 2; i < totalEntidades; i++) {
-        float dx = jogador->pos.x - vetorEntidades[i]->pos.x;
-        float dy = jogador->pos.y - vetorEntidades[i]->pos.y;
-        float distancia = sqrtf(dx * dx + dy * dy);
-
-        if (distancia < menorDistancia) {
-            menorDistancia = distancia;
-            indiceMaisProxima = i;
-        }
-    }
-
-    // Troca apenas os endereços dos ponteiros no vetor
-    Entidade *temp = vetorEntidades[1];
-    vetorEntidades[1] = vetorEntidades[indiceMaisProxima];
-    vetorEntidades[indiceMaisProxima] = temp;
-}
-
 int main(void) {
     srand((unsigned int)time(NULL));
-    InitWindow(LARGURA_JANELA, ALTURA_JANELA, "Atividade 5 - Exercicio 1");
+    InitWindow(LARGURA_JANELA, ALTURA_JANELA, "Atividade 5 - Exercicio 2");
     SetTargetFPS(60);
 
     Entidade *jogador = criarEntidade(ENTIDADE_JOGADOR, (Vector2){ LARGURA_JANELA / 2.0f, ALTURA_JANELA / 2.0f });
@@ -139,8 +114,13 @@ int main(void) {
         if (IsKeyDown(KEY_UP))    jogador->pos.y -= vel;
         if (IsKeyDown(KEY_DOWN))  jogador->pos.y += vel;
 
-        // Executa a ordenação antes de desenhar/atualizar o quadro
-        ordenarMaisProxima(jogador);
+        // EXERCÍCIO 2: Spawner dinâmico de itens ao pressionar a tecla N
+        if (IsKeyPressed(KEY_N)) {
+            if (totalEntidades < MAX_ENTIDADES) {
+                Vector2 pos = { GetRandomValue(30, LARGURA_JANELA - 30), GetRandomValue(30, ALTURA_JANELA - 30) };
+                adicionarEntidade(criarEntidade(ENTIDADE_ITEM, pos));
+            }
+        }
 
         for (int i = 1; i < totalEntidades; i++) {
             Entidade *e = vetorEntidades[i];
@@ -163,7 +143,7 @@ int main(void) {
             }
             DrawText(TextFormat("Vida: %d    Pontuacao: %d", jogador->vida, pontuacao), 10, 10, 22, DARKGRAY);
             DrawText(TextFormat("Entidades ativas: %d", totalEntidades), 10, 34, 18, GRAY);
-            DrawText("Setas movem | ESC sai", 10, ALTURA_JANELA - 25, 16, GRAY);
+            DrawText("Setas movem | N spawna item | ESC sai", 10, ALTURA_JANELA - 25, 16, GRAY);
         EndDrawing();
     }
 
