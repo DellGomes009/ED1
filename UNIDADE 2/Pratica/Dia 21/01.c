@@ -12,9 +12,9 @@ int main (void){
             printf("Arquivo aberto com sucesso.\n");
         }
 
-        fputc('C', arq);
-        fputs("Hello World", arq);
-        fprintf(arq, "Hello World !!!");
+        //fputc('C', arq);
+        //fputs("Hello World", arq);
+        //fprintf(arq, "Hello World !!!");
 
     fclose(arq);
     return 0;
