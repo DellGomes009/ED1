@@ -1,20 +1,5 @@
-Matricula: 20228578
-Nome: Josa
-Nota: 10.00
-
-Matricula: 2022021899
-Nome: jardel
-Nota: 10.00
-
-Matricula: 022021445
-Nome: jo
-Nota: 5.00
-
-Matricula: 2022021563
-Nome: gil
-Nota: 6.00
-
-Matricula: 2022034578
-Nome: jiji
-Nota: 2.00
-
+2222222 jatd 10.00
+55555 jajja 10.00
+202245 jad 4.00
+555555 ja 5.00
+jajajja kkaka 40.00

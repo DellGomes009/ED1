@@ -4,48 +4,52 @@
 typedef struct {
     char matricula[20];
     char nome[50];
-    float nota;
+    float nota_final;
 } Aluno;
 
-int main() {
-    FILE *alunos = fopen("alunos.txt", "w");
-
-    if (alunos == NULL) {
+int main (){
+    
+    FILE *arquivo = fopen("alunos.txt", "w");
+    if(arquivo == NULL){
         printf("Erro ao abrir o arquivo.\n");
         return 1;
     }
 
-    printf("O arquivo tipo txt esta sendo criado.\n\n");
+    Aluno alunos[5];
 
-    Aluno *lista = (Aluno *)malloc(5 * sizeof(Aluno));
+    for (int i = 0; i < 5; i++){
+        printf ("\nDigite os dados do aluno %d:\n", i + 1);
+        printf ("Matricula: ");
+        scanf (" %[^\n]", alunos[i].matricula);
+        printf ("Nome: ");
+        scanf (" %[^\n]", alunos[i].nome);
+        printf ("Nota Final: ");
+        scanf ("%f", &alunos[i].nota_final);
 
-    if (lista == NULL) {
-        printf("Erro ao alocar memoria.\n");
-        fclose(alunos);
+
+        fprintf(arquivo, "%s %s %.2f\n", alunos[i].matricula, alunos[i].nome, alunos[i].nota_final);
+    }
+
+    
+    fclose(arquivo);
+    printf("\nGravacao concluida. Fechando o arquivo...\n");
+
+    
+    printf("\n--- REABRINDO E LENDO DO ARQUIVO (alunos.txt) ---\n");
+    
+    arquivo = fopen("alunos.txt", "r");
+    if(arquivo == NULL){
+        printf("Erro ao reabrir o arquivo para leitura.\n");
         return 1;
     }
 
-    for (int i = 0; i < 5; i++) {
-
-        printf("Digite a matricula do aluno %d: ", i + 1);
-        fgets(lista[i].matricula, sizeof(lista[i].matricula), stdin);
-
-        printf("Digite o nome do aluno %d: ", i + 1);
-        fgets(lista[i].nome, sizeof(lista[i].nome), stdin);
-
-        printf("Digite a nota do aluno %d: ", i + 1);
-        scanf("%f", &lista[i].nota);
-        getchar();
-
-        fprintf(alunos, "Matricula: %s", lista[i].matricula);
-        fprintf(alunos, "Nome: %s", lista[i].nome);
-        fprintf(alunos, "Nota: %.2f\n\n", lista[i].nota);
+    Aluno lido;
+    
+    while (!feof(arquivo)){
+        fscanf(arquivo, "%s %s %f", lido.matricula, lido.nome, &lido.nota_final);
+        printf("Matricula: %s | Nome: %s | Nota Final: %.2f\n", lido.matricula, lido.nome, lido.nota_final);
     }
 
-    free(lista);
-    fclose(alunos);
-
-    printf("\nDados dos 5 alunos gravados com sucesso no arquivo alunos.txt!\n");
-
+    fclose(arquivo);
     return 0;
 }
