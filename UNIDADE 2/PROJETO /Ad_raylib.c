@@ -139,32 +139,25 @@ int main() {
 
     while (!WindowShouldClose()) {
         // --- CONTROLES DE TECLADO ---
-        
-        // Espaço: Pausa / Retoma a animação
         if (IsKeyPressed(KEY_SPACE)) pausado = !pausado;
 
-        // R: Reinicia para o começo
         if (IsKeyPressed(KEY_R)) {
             quadro_atual = 0;
             pausado = false;
         }
 
-        // Seta Direita: Avança 1 passo
         if (IsKeyPressed(KEY_RIGHT) && quadro_atual < total_passos - 1) {
             quadro_atual++;
         }
 
-        // Seta Esquerda: Volta 1 passo
         if (IsKeyPressed(KEY_LEFT) && quadro_atual > 0) {
             quadro_atual--;
         }
 
-        // Seta Cima: Aumenta a velocidade (diminui o tempo de espera)
         if (IsKeyPressed(KEY_UP) && velocidade > 0.05f) {
             velocidade -= 0.05f;
         }
 
-        // Seta Baixo: Diminui a velocidade
         if (IsKeyPressed(KEY_DOWN) && velocidade < 2.0f) {
             velocidade += 0.05f;
         }
@@ -189,16 +182,28 @@ int main() {
             // Desenha as barras do vetor
             desenharVetor(p.vetor, N, p.pivo_idx, p.troca_i, p.troca_j);
 
-            // Caixas de informações e controles (Painel HUD)
-            DrawRectangle(10, 10, 360, 100, Fade(LIGHTGRAY, 0.8f));
-            DrawRectangleLines(10, 10, 360, 100, GRAY);
+            // --- PAINEL ESQUERDO: STATUS DO ALGORITMO ---
+            DrawRectangle(10, 10, 260, 95, Fade(LIGHTGRAY, 0.85f));
+            DrawRectangleLines(10, 10, 260, 95, GRAY);
 
             DrawText(TextFormat("Passo: %d / %d", quadro_atual + 1, total_passos), 20, 20, 20, BLACK);
             DrawText(TextFormat("Status: %s", pausado ? "PAUSADO" : "RODANDO"), 20, 45, 18, pausado ? RED : DARKGREEN);
             DrawText(TextFormat("Intervalo: %.2fs/passo", velocidade), 20, 70, 16, DARKGRAY);
 
-            // Legenda dos controles na parte inferior
-            DrawText("[ESPAÇO] Pausar | [R] Reiniciar | [<- / ->] Passo a Passo | [CIMA/BAIXO] Velocidade", 10, 475, 15, DARKGRAY);
+            // --- PAINEL DIREITO: CONTROLES E LEGENDA (Canto Superior Direito) ---
+            int larguraControles = 290;
+            int posXControles = GetScreenWidth() - larguraControles - 10; // Calcula a posição inicial no lado direito
+            int posYControles = 10;
+
+            DrawRectangle(posXControles, posYControles, larguraControles, 125, Fade(LIGHTGRAY, 0.85f));
+            DrawRectangleLines(posXControles, posYControles, larguraControles, 125, GRAY);
+
+            DrawText("CONTROLES", posXControles + 10, posYControles + 8, 15, BLACK);
+            DrawText("[ESPAÇO] Pausar / Retomar", posXControles + 10, posYControles + 28, 13, DARKGRAY);
+            DrawText("[R] Reiniciar", posXControles + 10, posYControles + 45, 13, DARKGRAY);
+            DrawText("[<- / ->] Avançar / Voltar Passo", posXControles + 10, posYControles + 62, 13, DARKGRAY);
+            DrawText("[CIMA / BAIXO] Alterar Velocidade", posXControles + 10, posYControles + 79, 13, DARKGRAY);
+            DrawText("Amarelo: Pivô | Vermelho: Troca", posXControles + 10, posYControles + 100, 13, DARKBLUE);
 
         EndDrawing();
     }
