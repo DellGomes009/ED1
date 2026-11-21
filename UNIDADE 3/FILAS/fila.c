@@ -8,7 +8,7 @@ struct Fila {
 };
 
 Fila* criarFila(void) {
-    Fila *f = (Fila*) malloc(sizeof(Fila));
+    Fila *f = (Fila *)malloc(sizeof(Fila));
     if (f != NULL) {
         f->lista = criarLista();
         if (f->lista == NULL) {
@@ -29,19 +29,24 @@ int tamanhoFila(Fila *f) {
     return tamanhoLista(f->lista);
 }
 
-int enfileirar(Fila *f, int valor) {
+int enqueue(Fila *f, int valor) {
     if (f == NULL) return 0;
     return inserirFimLista(f->lista, valor);
 }
 
-int desenfileirar(Fila *f, int *valorRemovido) {
+int dequeue(Fila *f, int *valorRemovido) {
     if (f == NULL) return 0;
     return removerInicioLista(f->lista, valorRemovido);
 }
 
-int consultarInicioFila(Fila *f, int *valor) {
+int front(Fila *f, int *valor) {
     if (f == NULL) return 0;
     return consultarInicioLista(f->lista, valor);
+}
+
+int back(Fila *f, int *valor) {
+    if (f == NULL) return 0;
+    return consultarFimLista(f->lista, valor);
 }
 
 void imprimirFila(Fila *f) {
@@ -52,5 +57,6 @@ void imprimirFila(Fila *f) {
 void liberarFila(Fila *f) {
     if (f == NULL) return;
     liberarLista(f->lista);
+    f->lista = NULL;
     free(f);
 }

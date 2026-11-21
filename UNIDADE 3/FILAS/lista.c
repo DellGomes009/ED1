@@ -4,8 +4,7 @@
 
 typedef struct No {
     int dado;
-    struct No *ant;
-    struct No *prox;
+    struct No *proximo;
 } No;
 
 struct Lista {
@@ -15,7 +14,7 @@ struct Lista {
 };
 
 Lista* criarLista(void) {
-    Lista *l = (Lista*) malloc(sizeof(Lista));
+    Lista *l = (Lista *)malloc(sizeof(Lista));
     if (l != NULL) {
         l->inicio = NULL;
         l->fim = NULL;
@@ -39,21 +38,20 @@ int tamanhoLista(Lista *l) {
 int inserirFimLista(Lista *l, int valor) {
     if (l == NULL) return 0;
 
-    No *novo = (No*) malloc(sizeof(No));
+    No *novo = (No *)malloc(sizeof(No));
     if (novo == NULL) return 0;
 
     novo->dado = valor;
-    novo->prox = NULL;
+    novo->proximo = NULL;
 
     if (listaVazia(l)) {
-        novo->ant = NULL;
         l->inicio = novo;
+        l->fim = novo;
     } else {
-        novo->ant = l->fim;   // Novo nó aponta para trás (antigo fim)
-        l->fim->prox = novo;  // Antigo fim aponta para frente (novo nó)
+        l->fim->proximo = novo;
+        l->fim = novo;
     }
 
-    l->fim = novo;
     l->tamanho++;
     return 1;
 }
@@ -66,13 +64,10 @@ int removerInicioLista(Lista *l, int *valorRemovido) {
         *valorRemovido = remover->dado;
     }
 
-    l->inicio = l->inicio->prox;
+    l->inicio = l->inicio->proximo;
 
-    if (l->inicio != NULL) {
-        // O novo primeiro nó não tem ninguém antes dele
-        l->inicio->ant = NULL;
-    } else {
-        // A lista ficou completamente vazia
+    // Se a lista ficou vazia, atualiza fim para NULL
+    if (l->inicio == NULL) {
         l->fim = NULL;
     }
 
@@ -90,6 +85,15 @@ int consultarInicioLista(Lista *l, int *valor) {
     return 1;
 }
 
+int consultarFimLista(Lista *l, int *valor) {
+    if (listaVazia(l)) return 0;
+
+    if (valor != NULL) {
+        *valor = l->fim->dado;
+    }
+    return 1;
+}
+
 void imprimirLista(Lista *l) {
     if (listaVazia(l)) {
         printf("\n[Fila vazia]\n");
@@ -97,15 +101,12 @@ void imprimirLista(Lista *l) {
     }
 
     No *atual = l->inicio;
-    printf("\nINICIO: NULL <- ");
+    printf("\nINICIO -> ");
     while (atual != NULL) {
-        printf("[%d]", atual->dado);
-        if (atual->prox != NULL) {
-            printf(" <-> ");
-        }
-        atual = atual->prox;
+        printf("[%d] -> ", atual->dado);
+        atual = atual->proximo;
     }
-    printf(" -> NULL (FIM)\n");
+    printf("NULL (FIM)\n");
 }
 
 void liberarLista(Lista *l) {
@@ -114,5 +115,8 @@ void liberarLista(Lista *l) {
     while (!listaVazia(l)) {
         removerInicioLista(l, NULL);
     }
+
+    l->inicio = NULL;
+    l->fim = NULL;
     free(l);
 }
